@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width,initial-scale=1">
+<title>Katalog Produk</title>
+<script src="https://cdn.tailwindcss.com"></script>
+<style>
+  body{font-family:'Inter',system-ui,sans-serif;background:#0f172a;color:#e2e8f0}
+  .card{background:#1e293b;border:1px solid #334155;border-radius:12px;overflow:hidden;transition:transform .15s,box-shadow .15s;display:flex;flex-direction:column}
+  .card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,.4)}
+  .card img{width:100%;aspect-ratio:1/1;object-fit:cover;background:#0f172a}
+  .card-body{padding:12px;flex:1;display:flex;flex-direction:column;gap:6px}
+  .card-name{font-weight:600;font-size:.85rem;line-height:1.35;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .card-cat{font-size:.72rem;color:#94a3b8}
+  .card-desc{font-size:.75rem;color:#64748b;flex:1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .btn-buy{margin-top:auto;display:block;text-align:center;background:#f97316;color:#fff;padding:8px;border-radius:8px;font-size:.8rem;font-weight:600;text-decoration:none;transition:background .15s}
+  .btn-buy:hover{background:#ea580c}
+  .chip{display:inline-flex;align-items:center;padding:4px 12px;border-radius:999px;font-size:.75rem;cursor:pointer;border:1px solid #334155;background:#1e293b;transition:all .15s}
+  .chip.active{background:#f97316;border-color:#f97316;color:#fff;font-weight:600}
+  input[type=search]{background:#1e293b;border:1px solid #334155;color:#e2e8f0;border-radius:8px;padding:8px 14px;width:100%;font-size:.9rem;outline:none}
+  input[type=search]:focus{border-color:#f97316}
+  select{background:#1e293b;border:1px solid #334155;color:#e2e8f0;border-radius:8px;padding:8px 12px;font-size:.85rem;cursor:pointer;outline:none}
+  .pagination-btn{padding:6px 14px;border-radius:8px;border:1px solid #334155;background:#1e293b;color:#e2e8f0;font-size:.85rem;cursor:pointer}
+  .pagination-btn:disabled{opacity:.35;cursor:not-allowed}
+  .pagination-btn.active{background:#f97316;border-color:#f97316;color:#fff;font-weight:600}
+  .code-bar{display:none;align-items:center;gap:10px;background:#1e3a5f;border:1px solid #2563eb;border-radius:10px;padding:10px 16px;margin-bottom:12px;font-size:.85rem}
+  .code-badge{background:#f97316;color:#fff;font-weight:700;padding:3px 10px;border-radius:6px;letter-spacing:.05em;font-size:.9rem}
+  .card-code{font-size:.65rem;color:#64748b;font-family:monospace}
+  #loading{display:flex;align-items:center;justify-content:center;min-height:40vh;font-size:.95rem;color:#64748b}
+</style>
+</head>
+<body class="min-h-screen">
+<header class="sticky top-0 z-10 border-b border-slate-700/60 bg-slate-900/95 backdrop-blur px-4 py-3">
+  <div class="max-w-7xl mx-auto flex flex-wrap items-center gap-3">
+    <h1 class="text-lg font-bold text-orange-400 shrink-0">Katalog Produk</h1>
+    <input type="search" id="searchInput" placeholder="Cari produk..." class="flex-1 min-w-[180px]" oninput="applyFilters()">
+    <select id="sortSelect" onchange="applyFilters()">
+      <option value="default">Urutkan: Default</option>
+      <option value="name_asc">Nama A-Z</option>
+      <option value="name_desc">Nama Z-A</option>
+      <option value="cat_asc">Kategori A-Z</option>
+    </select>
+  </div>
+</header>
+<main class="max-w-7xl mx-auto px-4 py-5">
+  <div id="codeBar" class="code-bar mb-4">
+    <span>Menampilkan kode</span>
+    <span id="codeBadge" class="code-badge"></span>
+    <button id="clearCode" class="ml-auto text-slate-400 hover:text-white text-xs underline">Lihat semua</button>
+  </div>
+  <div id="catChips" class="flex flex-wrap gap-2 mb-5"></div>
+  <p id="statsBar" class="text-sm text-slate-400 mb-4"></p>
+  <div id="loading">Memuat katalog...</div>
+  <div id="grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 xl:grid-cols-5 gap-4"></div>
+  <div id="pagination" class="flex items-center justify-center gap-2 mt-8 flex-wrap"></div>
+</main>
+<script>
+let PRODUCTS=[];const PER_PAGE=20;let filtered=[],currentPage=1,activeCategory='',activeCode='';
+fetch('catalog.json?v='+Date.now()).then(r=>r.json()).then(data=>{PRODUCTS=data;document.getElementById('loading').style.display='none';init();}).catch(()=>{document.getElementById('loading').textContent='Gagal memuat katalog.';});
+function init(){const u=new URLSearchParams(window.location.search).get('code')||'';if(u)activeCode=u.toUpperCase();const cats=[...new Set(PRODUCTS.map(p=>p.cat))].sort();const ce=document.getElementById('catChips');[{l:'Semua',v:''},...cats.map(c=>({l:c,v:c}))].forEach(c=>{const el=document.createElement('button');el.className='chip'+(c.v===''&&!activeCode?' active':'');el.textContent=c.l;el.onclick=()=>{activeCategory=c.v;activeCode='';document.getElementById('codeBar').style.display='none';document.getElementById('searchInput').value='';document.querySelectorAll('.chip').forEach(x=>x.classList.remove('active'));el.classList.add('active');currentPage=1;applyFilters();};ce.appendChild(el);});if(activeCode){const cb=document.getElementById('codeBar');cb.style.display='flex';document.getElementById('codeBadge').textContent=activeCode;document.getElementById('clearCode').onclick=()=>{activeCode='';cb.style.display='none';document.querySelector('.chip').classList.add('active');currentPage=1;applyFilters();history.replaceState(null,'',window.location.pathname);};}applyFilters();}
+function applyFilters(){const q=document.getElementById('searchInput').value.toLowerCase().trim();const s=document.getElementById('sortSelect').value;filtered=PRODUCTS.filter(p=>{if(activeCode&&(p.code||'').toUpperCase()!==activeCode)return false;if(activeCategory&&p.cat!==activeCategory)return false;if(q&&!p.name.toLowerCase().includes(q)&&!p.cat.toLowerCase().includes(q)&&!(p.code||'').toLowerCase().includes(q))return false;return true;});if(s==='name_asc')filtered.sort((a,b)=>a.name.localeCompare(b.name,'id'));else if(s==='name_desc')filtered.sort((a,b)=>b.name.localeCompare(a.name,'id'));else if(s==='cat_asc')filtered.sort((a,b)=>a.cat.localeCompare(b.cat,'id'));renderPage();}
+function renderPage(){const total=filtered.length;const tp=Math.max(1,Math.ceil(total/PER_PAGE));if(currentPage>tp)currentPage=1;const start=(currentPage-1)*PER_PAGE;const slice=filtered.slice(start,start+PER_PAGE);document.getElementById('statsBar').textContent=`${total} produk · Halaman ${currentPage} dari ${tp}`;document.getElementById('grid').innerHTML=slice.map(p=>{const img=p.img?`<img src="${p.img}" alt="" loading="lazy" onerror="this.style.display='none'">`:`<div style="aspect-ratio:1/1;background:#0f172a;display:flex;align-items:center;justify-content:center;font-size:2rem">🛍️</div>`;return`<div class="card"><div>${img}</div><div class="card-body"><div class="card-name">${p.name}</div><div class="card-cat">${p.cat}</div>${p.desc?`<div class="card-desc">${p.desc}</div>`:''} ${p.code?`<div class="card-code">📋 ${p.code}</div>`:''}<a class="btn-buy" href="${p.link}" target="_blank" rel="noopener">Lihat Produk</a></div></div>`;}).join('');const pag=document.getElementById('pagination');if(tp<=1){pag.innerHTML='';return;}let b=`<button class="pagination-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>Prev</button>`;pagRange(currentPage,tp).forEach(p=>{if(p==='...')b+=`<span class="text-slate-500 px-1">...</span>`;else b+=`<button class="pagination-btn${p===currentPage?' active':''}" onclick="goPage(${p})">${p}</button>`;});b+=`<button class="pagination-btn" onclick="goPage(${currentPage+1})" ${currentPage===tp?'disabled':''}>Next</button>`;pag.innerHTML=b;}
+function goPage(p){currentPage=Math.max(1,Math.min(p,Math.max(1,Math.ceil(filtered.length/PER_PAGE))));window.scrollTo({top:0,behavior:'smooth'});renderPage();}
+function pagRange(cur,total){if(total<=7)return Array.from({length:total},(_,i)=>i+1);const r=[1];if(cur>3)r.push('...');for(let i=Math.max(2,cur-1);i<=Math.min(total-1,cur+1);i++)r.push(i);if(cur<total-2)r.push('...');r.push(total);return r;}
+</script>
+</body>
+</html>
