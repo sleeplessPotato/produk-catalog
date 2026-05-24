@@ -3,59 +3,85 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width,initial-scale=1">
-<title>Katalog Produk</title>
+<title>Radar Top 3</title>
+<link rel="icon" type="image/png" href="logo.png">
 <script src="https://cdn.tailwindcss.com"></script>
 <style>
   *{box-sizing:border-box}
-  body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:#0f172a;color:#e2e8f0;margin:0}
-  /* Card */
-  .card{background:#1e293b;border:1px solid #334155;border-radius:14px;overflow:hidden;display:flex;flex-direction:column;transition:transform .15s,box-shadow .15s}
-  .card:hover{transform:translateY(-2px);box-shadow:0 12px 40px rgba(0,0,0,.5)}
-  .card-img{width:100%;aspect-ratio:1/1;object-fit:cover;background:#0f172a;display:block}
-  .card-img-placeholder{width:100%;aspect-ratio:1/1;background:#1e293b;display:flex;align-items:center;justify-content:center;font-size:2.5rem}
-  .card-body{padding:14px;flex:1;display:flex;flex-direction:column;gap:8px}
-  .card-name{font-weight:600;font-size:.9rem;line-height:1.4;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;color:#f1f5f9}
-  .card-cat{font-size:.7rem;font-weight:600;color:#fb923c;background:rgba(249,115,22,.12);padding:3px 8px;border-radius:999px;display:inline-flex;align-items:center;gap:4px;width:fit-content}
-  .card-desc{font-size:.75rem;color:#64748b;flex:1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
-  .card-code{font-size:.65rem;color:#94a3b8;font-family:'Courier New',monospace;background:#0f172a;padding:2px 6px;border-radius:4px;display:inline-block;letter-spacing:.02em}
-  .btn-buy{margin-top:auto;display:flex;align-items:center;justify-content:center;gap:6px;background:#f97316;color:#fff;padding:10px 16px;border-radius:10px;font-size:.8rem;font-weight:700;text-decoration:none;transition:background .15s;border:none;cursor:pointer;width:100%}
-  .btn-buy:hover{background:#ea580c}
-  /* Chips */
-  .chips-wrap{display:flex;gap:8px;overflow-x:auto;padding-bottom:4px;scrollbar-width:none}
-  .chips-wrap::-webkit-scrollbar{display:none}
-  .chip{flex-shrink:0;display:inline-flex;align-items:center;padding:5px 14px;border-radius:999px;font-size:.78rem;cursor:pointer;border:1px solid #334155;background:#1e293b;color:#94a3b8;transition:all .15s;white-space:nowrap;font-weight:500}
-  .chip:hover{border-color:#f97316;color:#f97316}
-  .chip.active{background:#f97316;border-color:#f97316;color:#fff;font-weight:700}
-  /* Inputs */
-  input[type=search],select{background:#1e293b;border:1px solid #334155;color:#e2e8f0;border-radius:10px;padding:9px 14px;font-size:.875rem;outline:none;transition:border-color .15s}
-  input[type=search]:focus,select:focus{border-color:#f97316}
-  input[type=search]{width:100%}
-  /* Pagination */
-  .pg-btn{padding:7px 14px;border-radius:8px;border:1px solid #334155;background:#1e293b;color:#e2e8f0;font-size:.85rem;cursor:pointer;transition:all .15s;font-weight:500}
-  .pg-btn:hover:not(:disabled){background:#334155}
-  .pg-btn:disabled{opacity:.3;cursor:not-allowed}
-  .pg-btn.active{background:#f97316;border-color:#f97316;color:#fff;font-weight:700}
+  body{font-family:'Inter',system-ui,-apple-system,sans-serif;background:#f1f5f9;color:#0f172a;margin:0}
+  /* Header */
+  .site-header{background:#0a0a0a;border-bottom:1px solid #1f1f1f;position:sticky;top:0;z-index:20}
+  .header-inner{max-width:1200px;margin:0 auto;padding:10px 16px;display:flex;flex-direction:column;gap:10px}
+  @media(min-width:640px){.header-inner{flex-direction:row;align-items:center;gap:12px}}
+  .brand{display:flex;align-items:center;gap:10px;text-decoration:none;flex-shrink:0}
+  .brand-logo{width:36px;height:36px;border-radius:8px;object-fit:cover}
+  .brand-name{color:#ffffff;font-size:1rem;font-weight:800;letter-spacing:-.02em;white-space:nowrap}
+  .brand-name span{color:#f97316}
+  .search-row{display:flex;gap:8px;flex:1}
+  .search-wrap{position:relative;flex:1}
+  .search-wrap svg{position:absolute;left:11px;top:50%;transform:translateY(-50%);width:16px;height:16px;color:#6b7280;pointer-events:none}
+  input[type=search]{width:100%;background:#1c1c1c;border:1px solid #2d2d2d;color:#f1f5f9;border-radius:10px;padding:9px 12px 9px 36px;font-size:.875rem;outline:none;transition:border-color .15s}
+  input[type=search]::placeholder{color:#6b7280}
+  input[type=search]:focus{border-color:#f97316}
+  select{background:#1c1c1c;border:1px solid #2d2d2d;color:#f1f5f9;border-radius:10px;padding:9px 12px;font-size:.85rem;cursor:pointer;outline:none;white-space:nowrap;flex-shrink:0}
+  select:focus{border-color:#f97316}
+  /* Main */
+  main{max-width:1200px;margin:0 auto;padding:20px 16px}
   /* Code bar */
-  .code-bar{display:none;align-items:center;gap:10px;background:rgba(30,58,95,.9);border:1px solid #2563eb;border-radius:12px;padding:12px 16px;font-size:.85rem;flex-wrap:wrap}
+  .code-bar{display:none;align-items:center;gap:10px;background:#fff7ed;border:1px solid #fed7aa;border-radius:12px;padding:12px 16px;margin-bottom:20px;flex-wrap:wrap}
   .code-badge{background:#f97316;color:#fff;font-weight:700;padding:3px 12px;border-radius:6px;font-family:'Courier New',monospace;font-size:.85rem}
+  /* Chips */
+  .chips-wrap{display:flex;gap:8px;overflow-x:auto;padding-bottom:6px;margin-bottom:16px;scrollbar-width:none}
+  .chips-wrap::-webkit-scrollbar{display:none}
+  .chip{flex-shrink:0;display:inline-flex;align-items:center;padding:6px 16px;border-radius:999px;font-size:.78rem;cursor:pointer;border:1.5px solid #e2e8f0;background:#fff;color:#64748b;transition:all .15s;white-space:nowrap;font-weight:500;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  .chip:hover{border-color:#f97316;color:#f97316}
+  .chip.active{background:#f97316;border-color:#f97316;color:#fff;font-weight:700;box-shadow:0 2px 8px rgba(249,115,22,.3)}
+  /* Stats */
+  #statsBar{font-size:.8rem;color:#94a3b8;margin-bottom:16px}
+  /* Grid */
+  #grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
+  @media(min-width:540px){#grid{grid-template-columns:repeat(3,1fr);gap:14px}}
+  @media(min-width:900px){#grid{grid-template-columns:repeat(4,1fr);gap:16px}}
+  @media(min-width:1200px){#grid{grid-template-columns:repeat(5,1fr)}}
+  /* Cards */
+  .card{background:#fff;border:1px solid #e2e8f0;border-radius:14px;overflow:hidden;display:flex;flex-direction:column;transition:transform .15s,box-shadow .15s;box-shadow:0 1px 3px rgba(0,0,0,.06)}
+  .card:hover{transform:translateY(-3px);box-shadow:0 8px 30px rgba(0,0,0,.12)}
+  .card-img{width:100%;aspect-ratio:1/1;object-fit:cover;background:#f8fafc;display:block}
+  .card-img-ph{width:100%;aspect-ratio:1/1;background:#f1f5f9;display:flex;align-items:center;justify-content:center;font-size:2.5rem}
+  .card-body{padding:12px;flex:1;display:flex;flex-direction:column;gap:6px}
+  .card-cat{font-size:.68rem;font-weight:700;color:#f97316;text-transform:uppercase;letter-spacing:.04em}
+  .card-name{font-weight:600;font-size:.85rem;line-height:1.4;color:#111827;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden}
+  .card-desc{font-size:.75rem;color:#94a3b8;flex:1;display:-webkit-box;-webkit-line-clamp:2;-webkit-box-orient:vertical;overflow:hidden;line-height:1.5}
+  .card-code{font-size:.65rem;color:#94a3b8;font-family:'Courier New',monospace;background:#f8fafc;border:1px solid #e2e8f0;padding:2px 7px;border-radius:4px;display:inline-block}
+  .btn-buy{margin-top:auto;display:flex;align-items:center;justify-content:center;gap:6px;background:#f97316;color:#fff;padding:10px;border-radius:10px;font-size:.8rem;font-weight:700;text-decoration:none;transition:background .15s;border:none;cursor:pointer;width:100%}
+  .btn-buy:hover{background:#ea580c}
+  /* Pagination */
+  #pagination{display:flex;align-items:center;justify-content:center;gap:6px;margin-top:32px;flex-wrap:wrap}
+  .pg-btn{padding:7px 14px;border-radius:8px;border:1.5px solid #e2e8f0;background:#fff;color:#374151;font-size:.85rem;cursor:pointer;transition:all .15s;font-weight:500;box-shadow:0 1px 2px rgba(0,0,0,.04)}
+  .pg-btn:hover:not(:disabled){border-color:#f97316;color:#f97316}
+  .pg-btn:disabled{opacity:.35;cursor:not-allowed}
+  .pg-btn.active{background:#f97316;border-color:#f97316;color:#fff;font-weight:700;box-shadow:0 2px 8px rgba(249,115,22,.3)}
   /* Loading */
-  #loading{display:flex;align-items:center;justify-content:center;min-height:40vh;font-size:.95rem;color:#64748b;flex-direction:column;gap:12px}
-  .spinner{width:32px;height:32px;border:3px solid #334155;border-top-color:#f97316;border-radius:50%;animation:spin .8s linear infinite}
+  #loading{display:flex;align-items:center;justify-content:center;min-height:40vh;flex-direction:column;gap:12px;color:#94a3b8}
+  .spinner{width:32px;height:32px;border:3px solid #e2e8f0;border-top-color:#f97316;border-radius:50%;animation:spin .8s linear infinite}
   @keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
-<body class="min-h-screen">
+<body>
 
-<header class="sticky top-0 z-20 border-b border-slate-700/60 bg-slate-900/95 backdrop-blur-sm">
-  <div class="max-w-6xl mx-auto px-4 py-3 flex flex-col gap-2 sm:flex-row sm:items-center sm:gap-3">
-    <h1 class="text-base font-bold text-orange-400 shrink-0">🛍️ Katalog Produk</h1>
-    <div class="flex gap-2 flex-1">
-      <div class="relative flex-1">
-        <svg class="absolute left-3 top-1/2 -translate-y-1/2 w-4 h-4 text-slate-500" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
-        <input type="search" id="searchInput" placeholder="Cari produk, kategori, atau kode..." style="padding-left:36px" oninput="applyFilters()">
+<header class="site-header">
+  <div class="header-inner">
+    <a class="brand" href="/">
+      <img class="brand-logo" src="logo.png" alt="Radar Top 3 logo">
+      <span class="brand-name">Radar <span>Top 3</span></span>
+    </a>
+    <div class="search-row">
+      <div class="search-wrap">
+        <svg fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2"><circle cx="11" cy="11" r="8"/><path d="m21 21-4.35-4.35"/></svg>
+        <input type="search" id="searchInput" placeholder="Cari produk, kategori, atau kode..." oninput="applyFilters()">
       </div>
-      <select id="sortSelect" onchange="applyFilters()" style="flex-shrink:0;min-width:0">
-        <option value="default">Default</option>
+      <select id="sortSelect" onchange="applyFilters()">
+        <option value="default">Urutkan</option>
         <option value="name_asc">Nama A→Z</option>
         <option value="name_desc">Nama Z→A</option>
         <option value="cat_asc">Kategori</option>
@@ -64,33 +90,24 @@
   </div>
 </header>
 
-<main class="max-w-6xl mx-auto px-4 py-5">
-
-  <!-- Code filter banner -->
-  <div id="codeBar" class="code-bar mb-5">
-    <span class="text-slate-300">📋 Kompilasi</span>
+<main>
+  <div id="codeBar" class="code-bar">
+    <span style="color:#9a3412;font-size:.85rem">📋 Kompilasi</span>
     <span id="codeBadge" class="code-badge"></span>
-    <button id="clearCode" class="ml-auto text-slate-400 hover:text-white text-xs underline">Lihat semua produk</button>
+    <button id="clearCode" style="margin-left:auto;color:#94a3b8;font-size:.75rem;text-decoration:underline;background:none;border:none;cursor:pointer">Lihat semua produk</button>
   </div>
 
-  <!-- Category chips (horizontal scroll on mobile) -->
-  <div class="chips-wrap mb-5" id="catChips"></div>
+  <div class="chips-wrap" id="catChips"></div>
 
-  <!-- Stats -->
-  <p id="statsBar" class="text-xs text-slate-500 mb-4"></p>
+  <p id="statsBar"></p>
 
-  <!-- Loading state -->
   <div id="loading">
     <div class="spinner"></div>
     <span>Memuat katalog…</span>
   </div>
 
-  <!-- Product grid -->
-  <div id="grid" class="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-4 gap-3 sm:gap-4"></div>
-
-  <!-- Pagination -->
-  <div id="pagination" class="flex items-center justify-center gap-2 mt-8 flex-wrap"></div>
-
+  <div id="grid"></div>
+  <div id="pagination"></div>
 </main>
 
 <script>
@@ -106,16 +123,13 @@ fetch('catalog.json?v=' + Date.now())
     init();
   })
   .catch(() => {
-    const el = document.getElementById('loading');
-    el.innerHTML = '<span style="color:#ef4444">Gagal memuat katalog. Coba muat ulang halaman.</span>';
+    document.getElementById('loading').innerHTML = '<span style="color:#ef4444">Gagal memuat katalog. Coba muat ulang halaman.</span>';
   });
 
 function init() {
-  // Read ?code= from URL
   const urlCode = new URLSearchParams(window.location.search).get('code') || '';
   if (urlCode) activeCode = urlCode.toUpperCase();
 
-  // Build category chips
   const cats = [...new Set(PRODUCTS.map(p => p.cat).filter(Boolean))].sort();
   const ce = document.getElementById('catChips');
   [{ l: 'Semua', v: '' }, ...cats.map(c => ({ l: c, v: c }))].forEach(c => {
@@ -136,7 +150,6 @@ function init() {
     ce.appendChild(el);
   });
 
-  // Setup code banner
   if (activeCode) {
     const cb = document.getElementById('codeBar');
     cb.style.display = 'flex';
@@ -159,24 +172,21 @@ function applyFilters() {
   const s = document.getElementById('sortSelect').value;
 
   filtered = PRODUCTS.filter(p => {
-    // Code banner filter (exact match from URL ?code=)
     if (activeCode && (p.code || '').toUpperCase() !== activeCode) return false;
-    // Category chip filter
     if (activeCategory && p.cat !== activeCategory) return false;
-    // Text search: name, cat, desc, code
     if (q) {
-      const inName = (p.name || '').toLowerCase().includes(q);
-      const inCat  = (p.cat  || '').toLowerCase().includes(q);
-      const inDesc = (p.desc || '').toLowerCase().includes(q);
-      const inCode = (p.code || '').toLowerCase().includes(q);
-      if (!inName && !inCat && !inDesc && !inCode) return false;
+      const hit = (p.name||'').toLowerCase().includes(q)
+               || (p.cat||'').toLowerCase().includes(q)
+               || (p.desc||'').toLowerCase().includes(q)
+               || (p.code||'').toLowerCase().includes(q);
+      if (!hit) return false;
     }
     return true;
   });
 
-  if (s === 'name_asc') filtered.sort((a, b) => (a.name || '').localeCompare(b.name || '', 'id'));
-  else if (s === 'name_desc') filtered.sort((a, b) => (b.name || '').localeCompare(a.name || '', 'id'));
-  else if (s === 'cat_asc') filtered.sort((a, b) => (a.cat || '').localeCompare(b.cat || '', 'id'));
+  if (s === 'name_asc') filtered.sort((a,b) => (a.name||'').localeCompare(b.name||'','id'));
+  else if (s === 'name_desc') filtered.sort((a,b) => (b.name||'').localeCompare(a.name||'','id'));
+  else if (s === 'cat_asc') filtered.sort((a,b) => (a.cat||'').localeCompare(b.cat||'','id'));
 
   renderPage();
 }
@@ -188,39 +198,37 @@ function renderPage() {
   const start = (currentPage - 1) * PER_PAGE;
   const slice = filtered.slice(start, start + PER_PAGE);
 
-  document.getElementById('statsBar').textContent =
-    total === 0
-      ? 'Tidak ada produk ditemukan'
-      : `${total.toLocaleString('id')} produk · Halaman ${currentPage} dari ${tp}`;
+  document.getElementById('statsBar').textContent = total === 0
+    ? 'Tidak ada produk ditemukan'
+    : `${total.toLocaleString('id')} produk · Halaman ${currentPage} dari ${tp}`;
 
   document.getElementById('grid').innerHTML = slice.map(p => {
-    const imgEl = p.img
+    const img = p.img
       ? `<img class="card-img" src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy" onerror="this.style.display='none'">`
-      : `<div class="card-img-placeholder">🛍️</div>`;
+      : `<div class="card-img-ph">🛍️</div>`;
     return `<div class="card">
-      ${imgEl}
+      ${img}
       <div class="card-body">
-        ${p.cat ? `<span class="card-cat">${esc(p.cat)}</span>` : ''}
+        ${p.cat ? `<div class="card-cat">${esc(p.cat)}</div>` : ''}
         <div class="card-name">${esc(p.name)}</div>
         ${p.desc ? `<div class="card-desc">${esc(p.desc)}</div>` : ''}
         ${p.code ? `<span class="card-code">📋 ${esc(p.code)}</span>` : ''}
         <a class="btn-buy" href="${esc(p.link)}" target="_blank" rel="noopener noreferrer">
-          <svg width="14" height="14" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M10 6H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
+          <svg width="13" height="13" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2.5"><path d="M10 6H6a2 2 0 0 0-2 2v10a2 2 0 0 0 2 2h10a2 2 0 0 0 2-2v-4M14 4h6m0 0v6m0-6L10 14"/></svg>
           Lihat Produk
         </a>
       </div>
     </div>`;
   }).join('');
 
-  // Pagination
   const pag = document.getElementById('pagination');
   if (tp <= 1) { pag.innerHTML = ''; return; }
-  let b = `<button class="pg-btn" onclick="goPage(${currentPage - 1})" ${currentPage === 1 ? 'disabled' : ''}>‹ Prev</button>`;
+  let b = `<button class="pg-btn" onclick="goPage(${currentPage-1})" ${currentPage===1?'disabled':''}>‹ Prev</button>`;
   pagRange(currentPage, tp).forEach(p => {
-    if (p === '…') b += `<span style="color:#475569;padding:0 4px">…</span>`;
-    else b += `<button class="pg-btn${p === currentPage ? ' active' : ''}" onclick="goPage(${p})">${p}</button>`;
+    if (p === '…') b += `<span style="color:#94a3b8;padding:0 4px">…</span>`;
+    else b += `<button class="pg-btn${p===currentPage?' active':''}" onclick="goPage(${p})">${p}</button>`;
   });
-  b += `<button class="pg-btn" onclick="goPage(${currentPage + 1})" ${currentPage === tp ? 'disabled' : ''}>Next ›</button>`;
+  b += `<button class="pg-btn" onclick="goPage(${currentPage+1})" ${currentPage===tp?'disabled':''}>Next ›</button>`;
   pag.innerHTML = b;
 }
 
@@ -232,11 +240,11 @@ function goPage(p) {
 }
 
 function pagRange(cur, total) {
-  if (total <= 7) return Array.from({ length: total }, (_, i) => i + 1);
+  if (total <= 7) return Array.from({length:total}, (_,i) => i+1);
   const r = [1];
   if (cur > 3) r.push('…');
-  for (let i = Math.max(2, cur - 1); i <= Math.min(total - 1, cur + 1); i++) r.push(i);
-  if (cur < total - 2) r.push('…');
+  for (let i = Math.max(2,cur-1); i <= Math.min(total-1,cur+1); i++) r.push(i);
+  if (cur < total-2) r.push('…');
   r.push(total);
   return r;
 }
