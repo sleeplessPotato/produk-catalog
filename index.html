@@ -204,8 +204,7 @@ function renderPage() {
     : `${total.toLocaleString('id')} produk · Halaman ${currentPage} dari ${tp}`;
 
   document.getElementById('grid').innerHTML = slice.map(p => {
-    const img = p.img
-      `<div class="card-img-wrap"><div class="card-img-ph">🛍️</div>${p.img ? `<img class="card-img" src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy" onerror="this.remove()">` : ''}</div>`;
+    const img = `<div class="card-img-wrap"><div class="card-img-ph">🛍️</div>${p.img ? `<img class="card-img" src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy" onerror="this.remove()">` : ''}</div>`;
     return `<div class="card">
       ${img}
       <div class="card-body">
