@@ -37,7 +37,8 @@
   .chip:hover{border-color:#f97316;color:#f97316}
   .chip.active{background:#f97316;border-color:#f97316;color:#fff;font-weight:700;box-shadow:0 2px 8px rgba(249,115,22,.3)}
   /* Stats */
-  #statsBar{font-size:.8rem;color:#94a3b8;margin-bottom:16px}
+  #statsBar{font-size:.8rem;color:#94a3b8;margin-bottom:4px}
+  #updatedAt{font-size:.72rem;color:#64748b;margin-bottom:14px}
   /* Grid */
   #grid{display:grid;grid-template-columns:repeat(2,1fr);gap:12px}
   @media(min-width:540px){#grid{grid-template-columns:repeat(3,1fr);gap:14px}}
@@ -101,6 +102,7 @@
   <div class="chips-wrap" id="catChips"></div>
 
   <p id="statsBar"></p>
+  <p id="updatedAt"></p>
 
   <div id="loading">
     <div class="spinner"></div>
@@ -113,13 +115,15 @@
 
 <script>
 let PRODUCTS = [];
+let CATALOG_UPDATED_AT = 0;
 const PER_PAGE = 20;
 let filtered = [], currentPage = 1, activeCategory = '', activeCode = '';
 
 fetch('catalog.json?v=' + Date.now())
   .then(r => r.json())
   .then(data => {
-    PRODUCTS = data;
+    PRODUCTS = data.items || data;
+    CATALOG_UPDATED_AT = data.updated_at || 0;
     document.getElementById('loading').style.display = 'none';
     init();
   })
@@ -202,6 +206,11 @@ function renderPage() {
   document.getElementById('statsBar').textContent = total === 0
     ? 'Tidak ada produk ditemukan'
     : `${total.toLocaleString('id')} produk · Halaman ${currentPage} dari ${tp}`;
+  if (CATALOG_UPDATED_AT) {
+    const d = new Date(CATALOG_UPDATED_AT * 1000);
+    const fmt = d.toLocaleString('id-ID', { day:'numeric', month:'long', year:'numeric', hour:'2-digit', minute:'2-digit', timeZone:'Asia/Jakarta' });
+    document.getElementById('updatedAt').textContent = `Diperbarui: ${fmt} WIB`;
+  }
 
   document.getElementById('grid').innerHTML = slice.map(p => {
     const img = `<div class="card-img-wrap"><div class="card-img-ph">🛍️</div>${p.img ? `<img class="card-img" src="${esc(p.img)}" alt="${esc(p.name)}" loading="lazy" onerror="this.remove()">` : ''}</div>`;
